@@ -44,3 +44,25 @@ WHERE with non-numeric values practice
 1.SELECT name, website, primary_poc
 FROM accounts
 WHERE name = 'Exxon Mobil';
+
+Arithmetic Operators
+1. Create a column that divides the standard_amt_usd by the standard_qty to find the unit price for standard paper for each order. Limit the results to the first 10 orders, and include the id and account_id fields.
+SELECT id,
+account_id,
+standard_amt_usd / standard_qty AS standard_paper_price
+FROM orders
+LIMIT 10;
+
+2. 
+(EASY WAY)
+SELECT id,
+account_id,
+(poster_amt_usd / total_amt_usd) * 100
+FROM orders;
+
+(WITHOUT OUT USING total_amt_usd)
+SELECT id,
+account_id,
+poster_amt_usd / (standard_amt_usd + gloss_amt_usd + poster_amt_usd) * 100 AS poster_percent_rev
+FROM orders
+LIMIT 10;
