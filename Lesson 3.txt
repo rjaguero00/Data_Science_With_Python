@@ -128,3 +128,28 @@ FROM sales_reps, region
 WHERE region.id = sales_reps.region_id
 GROUP BY region.name
 ORDER BY total_reps ASC;
+
+QUIZ 4 GROUP BY II
+
+1.
+
+SELECT accounts.name,
+AVG(orders.standard_qty) AS avg_standard,
+AVG(orders.poster_qty) AS avg_poster,
+AVG(orders.gloss_qty) AS avg_gloss
+FROM orders, accounts
+WHERE orders.account_id = accounts.id
+GROUP BY accounts.name;
+
+2.
+
+SELECT accounts.name,
+AVG(orders.standard_amt_usd) AS avg_standard,
+AVG(orders.poster_amt_usd) AS avg_poster,
+AVG(orders.gloss_amt_usd) AS avg_gloss
+FROM orders, accounts
+WHERE orders.account_id = accounts.id
+GROUP BY accounts.name;
+
+3.
+
