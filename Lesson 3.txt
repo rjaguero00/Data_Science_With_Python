@@ -69,3 +69,62 @@ FROM (SELECT total_amt_usd
       LIMIT 3457) AS Table1
 ORDER BY total_amt_usd DESC
 LIMIT 2;
+
+QUIZ 3  GROUP BY
+
+1.Which account (by name) placed the earliest order? Your solution should have the account name and the date of the order.
+
+SELECT accounts.name, orders.occurred_at
+FROM accounts, orders
+WHERE accounts.id = orders.account_id
+ORDER BY orders.occurred_at
+LIMIT 1;
+
+2.Find the total sales in usd for each account. You should include two columns - the total sales for each company's orders in usd and the company name.
+
+SELECT accounts.name company_name,
+SUM(orders.total_amt_usd) AS total_sales
+FROM accounts, orders
+WHERE accounts.id = orders.account_id
+GROUP BY company_name;
+
+
+3.Via what channel did the most recent (latest) web_event occur, which account was associated with this web_event? Your query should return only three values - the date, channel, and account name.
+
+SELECT accounts.name, web_events.occurred_at, web_events.channel
+FROM accounts, web_events
+WHERE accounts.id = web_events.account_id
+ORDER BY occurred_at
+LIMIT 1;
+
+4.nd the total number of times each type of channel from the web_events was used. Your final table should have two columns - the channel and the number of times the channel was used.
+
+SELECT web_events.channel, COUNT(*)
+FROM web_events
+GROUP BY channel;
+
+5.Who was the primary contact associated with the earliest web_event?
+
+SELECT accounts.primary_poc, web_events.occurred_at
+FROM accounts, web_events
+WHERE accounts.id = web_events.account_id
+ORDER BY occurred_at ASC
+LIMIT 1;
+
+6.What was the smallest order placed by each account in terms of total usd. Provide only two columns - the account name and the total usd. Order from smallest dollar amounts to largest
+
+SELECT accounts.name,
+MIN(orders.total_amt_usd) AS total_usd
+FROM orders, accounts
+WHERE accounts.id = orders.account_id
+GROUP BY accounts.name
+ORDER BY total_usd ASC;
+
+7.Find the number of sales reps in each region. Your final table should have two columns - the region and the number of sales_reps. Order from fewest reps to most reps.
+
+SELECT region.name,
+COUNT(*) total_reps
+FROM sales_reps, region
+WHERE region.id = sales_reps.region_id
+GROUP BY region.name
+ORDER BY total_reps ASC;
