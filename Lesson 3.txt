@@ -131,7 +131,7 @@ ORDER BY total_reps ASC;
 
 QUIZ 4 GROUP BY II
 
-1.
+1.For each account, determine the average amount of each type of paper they purchased across their orders. Your result should have four columns - one for the account name and one for the average quantity purchased for each of the paper types for each account.
 
 SELECT accounts.name,
 AVG(orders.standard_qty) AS avg_standard,
@@ -141,7 +141,7 @@ FROM orders, accounts
 WHERE orders.account_id = accounts.id
 GROUP BY accounts.name;
 
-2.
+2.For each account, determine the average amount spent per order on each paper type. Your result should have four columns - one for the account name and one for the average amount spent on each paper type.
 
 SELECT accounts.name,
 AVG(orders.standard_amt_usd) AS avg_standard,
@@ -151,5 +151,18 @@ FROM orders, accounts
 WHERE orders.account_id = accounts.id
 GROUP BY accounts.name;
 
-3.
+3.Determine the number of times a particular channel was used in the web_events table for each sales rep. Your final table should have three columns - the name of the sales rep, the channel, and the number of occurrences. Order your table with the highest number of occurrences first.
 
+SELECT sales_reps.name, web_events.channel, COUNT (*) total_events
+FROM accounts, web_events, sales_reps
+WHERE accounts.id = web_events.account_id AND sales_reps.id = accounts.sales_rep_id
+GROUP BY sales_reps.name, web_events.channel
+ORDER BY total_events DESC;
+
+4.Determine the number of times a particular channel was used in the web_events table for each region. Your final table should have three columns - the region name, the channel, and the number of occurrences. Order your table with the highest number of occurrences first.
+
+SELECT region.name, web_events.channel, COUNT(*) channel_occs
+FROM web_events, accounts, sales_reps, region
+WHERE web_events.account_id = accounts.id AND sales_reps.id = accounts.sales_rep_id AND sales_reps.region_id = region.id
+GROUP BY region.name, web_events.channel
+ORDER BY channel_occs DESC;
