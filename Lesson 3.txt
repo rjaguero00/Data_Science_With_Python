@@ -262,3 +262,16 @@ FROM accounts, orders, sales_reps
 WHERE sales_reps.id = accounts.sales_rep_id AND accounts.id = orders.account_id
 GROUP BY sales_reps.name
 ORDER by 2 DESC;
+
+6.
+
+SELECT 
+sales_reps.name, 
+COUNT(*), SUM(orders.total_amt_usd) Total_spent,
+CASE WHEN COUNT(*) > 200 OR SUM(orders.total_amt_usd) > 750000 THEN 'top'
+WHEN COUNT(*) > 150 OR SUM(orders.total_amt_usd) > 500000 THEN 'middle'
+ELSE 'low' END AS Sales_perform
+FROM accounts, sales_reps, orders
+WHERE sales_reps.id = accounts.sales_rep_id AND accounts.id = orders.account_id
+GROUP BY 1
+ORDER BY 3 DESC;
