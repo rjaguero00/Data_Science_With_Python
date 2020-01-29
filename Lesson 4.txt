@@ -52,7 +52,7 @@ NEXT - Pull the largest total
 SELECT MAX(total_amt)
 FROM (SELECT r.name region_name, SUM(o.total_amt_usd) total_amt
     WHERE s.region_id = r.id AND s.id = a.sales_rep_id AND a.id = o.account_id
-    GROUP BY r.name) sub;
+    GROUP BY r.name) t1;
 
 LAST - Now pull the total orders from this region with the largest amount
 
@@ -169,3 +169,10 @@ HAVING AVG(o.total_amt_usd) > (SELECT AVG(o.total_amt_usd) avg_all
 FROM orders o);
 
 -Than we average all the accounts we found above that were > than the avg_all
+
+SELECT AVG(avg_amt)
+FROM (SELECT o.account_id, AVG(o.total_amt_usd) avg_amt
+    FROM orders o
+    GROUP BY 1
+    HAVING AVG(o.total_amt_usd) > (SELECT AVG(o.total_amt_usd) avg_all
+                                   FROM orders o)) t1;
