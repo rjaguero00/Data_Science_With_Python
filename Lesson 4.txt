@@ -1,0 +1,171 @@
+QUIZ Subquery Mania
+
+Question 1.
+
+Table 1 - finds the total_amt_usd assiociated with each sales rep and their region.
+
+SELECT s.name rep_name, r.name region_name, SUM(o.total_amt_usd) total_amt
+FROM sales_reps s, accounts a, orders o, region r
+WHERE s.region_id = r.id AND s.id = a.sales_rep_id AND a.id = o.account_id
+GROUP BY 1,2
+ORDER BY 3 DESC;
+
+Table 2 - Now we want the top total_amt_usd for each region.
+
+SELECT region_name,  MAX(total_amt) total_amt
+FROM(SELECT s.name rep_name, r.name region_name, SUM(o.total_amt_usd) total_amt
+FROM sales_reps s, accounts a, orders o, region r
+WHERE s.region_id = r.id AND s.id = a.sales_rep_id AND a.id = o.account_id
+GROUP BY 1,2) t1
+GROUP BY 1;
+
+
+Table 3 - Lastly, find the sales reps name of the top total_amt_usd for each region. 
+
+SELECT t3.rep_name, t3.region_name, t3.total_amt
+FROM(SELECT region_name, MAX(total_amt) total_amt
+     FROM(SELECT s.name rep_name, r.name region_name, SUM(o.total_amt_usd) total_amt
+            FROM sales_reps s, accounts a, orders o, region r
+          	WHERE s.region_id = r.id AND s.id = a.sales_rep_id AND a.id = o.account_id
+             GROUP BY 1, 2) t1
+     GROUP BY 1) t2
+JOIN (SELECT s.name rep_name, r.name region_name, SUM(o.total_amt_usd) total_amt
+   FROM sales_reps s, accounts a, orders o, region r
+          	WHERE s.region_id = r.id AND s.id = a.sales_rep_id AND a.id = o.account_id
+     GROUP BY 1,2
+     ORDER BY 3 DESC) t3
+ON t3.region_name = t2.region_name AND t3.total_amt = t2.total_amt;
+
+
+Question 2
+
+Table 1 - Find the region and the total sum of total_amt
+
+SELECT r.name region_name, SUM(o.total_amt_usd) total_amt
+FROM sales_reps s, accounts a, orders o, region r
+WHERE s.region_id = r.id AND s.id = a.sales_rep_id AND a.id = o.account_id
+GROUP BY 1
+ORDER BY 2 DESC;
+
+NEXT - Pull the largest total
+
+SELECT MAX(total_amt)
+FROM (SELECT r.name region_name, SUM(o.total_amt_usd) total_amt
+    WHERE s.region_id = r.id AND s.id = a.sales_rep_id AND a.id = o.account_id
+    GROUP BY r.name) sub;
+
+LAST - Now pull the total orders from this region with the largest amount
+
+SELECT r.name, COUNT(o.total) total_orders
+FROM sales_reps s, accounts a, orders o, region r
+WHERE s.region_id = r.id AND s.id = a.sales_rep_id AND a.id = o.account_id
+GROUP BY r.name
+HAVING SUM(o.total_amt_usd) = (
+SELECT MAX(total_amt)
+FROM (SELECT r.name region_name, SUM(o.total_amt_usd) total_amt
+FROM sales_reps s, accounts a, orders o, region r
+WHERE s.region_id = r.id AND s.id = a.sales_rep_id AND a.id = o.account_id
+GROUP BY r.name) t1);
+
+
+QUESTION 3
+
+- Pull account name with total standard_qty ordered and total of all orders(standard, gloss, and poster qty)
+
+SELECT a.name account_name, SUM(o.standard_qty) total_std, SUM(o.total) total
+FROM accounts a, orders o
+WHERE a.id = o.account_id
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 1;
+
+-Pulls the accounts with total > standard_qty
+
+SELECT a.name
+FROM accounts a, orders o
+WHERE a.id = o.account_id
+GROUP BY 1 
+HAVING SUM(o.total) > (SELECT a.name account_name, SUM(o.standard_qty) total_std, SUM(o.total) total
+FROM accounts a, orders o
+WHERE a.id = o.account_id
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 1) t1);
+
+-Gives us the count of accounts the met the condidtion total > standard_qty
+
+SELECT COUNT(*)
+FROM (SELECT a.name
+FROM accounts a, orders o
+WHERE a.id = o.account_id
+GROUP BY 1 
+HAVING SUM(o.total) > (SELECT total
+FROM (SELECT a.name account_name, SUM(o.standard_qty) total_std, SUM(o.total) total
+FROM accounts a, orders o
+WHERE a.id = o.account_id
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 1) t1)
+      ) t2;
+
+QUESTION 4
+
+- Pulls cumstomer that spent the most over a lifetime
+SELECT a.id acc_id, a.name account_name, SUM(o.total_amt_usd) total_spent
+FROM accounts a, orders o
+WHERE a.id = o.account_id
+GROUP BY 1, 2
+ORDER BY 3 DESC
+LIMIT 1;
+
+- By match the id found in the table above we can now find the number of events this company had on each channel.
+
+SELECT a.name, w.channel, COUNT(*)
+FROM accounts a, web_events w
+WHERE a.id = w.account_id AND a.id = (SELECT id
+FROM (SELECT a.id, a.name, SUM(o.total_amt_usd) tot_spent
+      FROM orders o, accounts a
+      WHERE a.id = o.account_id
+      GROUP BY a.id, a.name
+      ORDER BY 3 DESC
+      LIMIT 1) t1)
+GROUP BY 1, 2
+ORDER BY 3 DESC;
+
+QUESTION 5
+
+- Pull the top 10 spending accounts
+
+SELECT a.id, a.name, SUM(o.total_amt_usd) tot_spent
+FROM accounts a, orders o
+WHERE a.id = o.account_id
+GROUP BY 1, 2
+ORDER BY 3 DESC
+LIMIT 10;
+
+- Now we just need to find the average spending amount of these 10 accounts
+
+SELECT AVG (tot_spent)
+FROM (SELECT a.id, a.name, SUM(o.total_amt_usd) tot_spent
+FROM accounts a, orders o
+WHERE a.id = o.account_id
+GROUP BY 1, 2
+ORDER BY 3 DESC
+LIMIT 10) t1;
+
+QUESTION 6
+
+-Pull the average of all accounts == total_amt_usd
+
+SELECT AVG(o.total_amt_usd) avg_all
+FROM orders o;
+
+-This then pulls all accounts that are > than the avg_all
+
+SELECT o.account_id, AVG(o.total_amt_usd)
+FROM orders o
+GROUP BY 1
+HAVING AVG(o.total_amt_usd) > (SELECT AVG(o.total_amt_usd) avg_all
+FROM orders o);
+
+-Than we average all the accounts we found above that were > than the avg_all
