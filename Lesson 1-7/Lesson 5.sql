@@ -32,3 +32,17 @@ FROM (
     CASE WHEN LEFT(UPPER(name), 1) IN ('A', 'E', 'I', 'O', 'U') THEN 0 ELSE 1 END AS nope
     FROM accounts
 ) t1;
+
+QUIZ POSITION, STRPOS, & SUBSTR
+
+-- QUESTION 1
+
+SELECT LEFT(primary_poc, STRPOS(primary_poc, ' ') - 1) AS first_name,
+RIGHT(primary_poc, LENGTH(primary_poc) - STRPOS(primary_poc, ' ')) last_name
+FROM accounts;
+
+-- QUESTION 2
+
+SELECT LEFT(name, STRPOS(name, ' ') - 1) AS first_name,
+RIGHT(name, LENGTH(name) - STRPOS(name, ' ')) last_name
+FROM sales_reps;
