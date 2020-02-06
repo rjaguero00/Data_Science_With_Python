@@ -55,6 +55,7 @@ ORDER BY 3 DESC;
 
 -- 3. How many films were returned early, late, and on time?
 
+-- Finds the number of days the film was rented for 
 WITH
     t1
     AS
@@ -62,6 +63,7 @@ WITH
         SELECT *, DATE_PART('day', return_date - rental_date) AS days_rented
         FROM rental
     ),
+    -- We then use the days rented to find if the film was returned early, late, or on time 
     t2
     AS
     (
@@ -73,6 +75,7 @@ WITH
         FROM film f, inventory i, t1
         WHERE f.film_id = i.film_id AND t1.inventory_id = i.inventory_id
     )
+-- A count of the all movies rented and the status of their return 
 SELECT rental_return_status, COUNT(*) AS total_films_rented
 FROM t2
 GROUP BY 1
@@ -80,73 +83,16 @@ ORDER BY 2 DESC;
 
 -- 4. Is there a difference in inventory based on top categories?
 
+WITH
+    t1
+    AS
+    (
+        SELECT f.title, f.film_id film, fc.category_id fc_category_id, c.name categories
+        FROM film f, film_category fc, inventory i, category c
+        WHERE f.film_id = fc.film_id AND fc.category_id = c.category_id AND f.film_id = i.film_id
+    )
 
-
-
-
-
-
-SELECT f.title, c.name, COUNT(r.rental_id)
-FROM film f, category c, film_category fc, rental r, inventory i
-WHERE f.film_id = fc.film_id AND fc.category_id = c.category_id AND r.inventory_id = i.inventory_id AND f.film_id = i.film_id AND c.name IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
-GROUP BY 1, 2
-ORDER BY 3 DESC;
-
-
-
-SELECT name, COUNT(name) cat_total
-FROM (SELECT f.title, c.name
-    FROM film f, category c, film_category fc
-    WHERE f.film_id = fc.film_id AND fc.category_id = c.category_id AND c.name IN ('Action', 'Animation', 'Children', 'Classics', 'Comedy', 'Documentary', 'Drama', 'Foreign', 'Games', 'Horror', 'New', 'Sci-Fi', 'Sports', 'Travel', 'Family', 'Music')
-    GROUP BY 1, 2
-    ORDER BY 2) t1
-GROUP BY 1;
-
-
-SELECT name, COUNT(name) cat_total
-FROM (SELECT f.title, c.name, COUNT(r.rental_id)
-    FROM film f, category c, film_category fc, rental r, inventory i
-    WHERE f.film_id = fc.film_id AND fc.category_id = c.category_id AND r.inventory_id = i.inventory_id AND f.film_id = i.film_id AND c.name IN ('Action', 'Animation', 'Children', 'Classics', 'Comedy', 'Documentary', 'Drama', 'Foreign', 'Games', 'Horror', 'New', 'Sci-Fi', 'Sports', 'Travel', 'Family', 'Music')
-    GROUP BY 1, 2
-    ORDER BY 2, 3 DESC) t1
+SELECT categories, COUNT(*) num_copies
+FROM t1
 GROUP BY 1
 ORDER BY 2 DESC;
-
-
-
-
--- 2. 
-SELECT name, COUNT(name) cat_total
-FROM (SELECT f.title, c.name
-    FROM film f, category c, film_category fc
-    WHERE f.film_id = fc.film_id AND fc.category_id = c.category_id AND c.name IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
-    GROUP BY 1, 2
-    ORDER BY 2) t1
-GROUP BY 1;
-
-
-SELECT f.title, c.name, COUNT(r.rental_id)
-FROM film f, category c, film_category fc, rental r, inventory i
-WHERE f.film_id = fc.film_id AND fc.category_id = c.category_id AND r.inventory_id = i.inventory_id AND f.film_id = i.film_id AND c.name IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
-GROUP BY 1, 2
-ORDER BY 3 DESC;
-
-SELECT f.title, c.name, COUNT(r.rental_id)
-FROM film f, category c, film_category fc, rental r, inventory i
-WHERE f.film_id = fc.film_id AND fc.category_id = c.category_id AND r.inventory_id = i.inventory_id AND f.film_id = i.film_id AND c.name IN ('Action', 'Animation', 'Children', 'Classics', 'Comedy', 'Documentary', 'Drama', 'Foreign', 'Games', 'Horror', 'New', 'Sci-Fi', 'Sports', 'Travel', 'Family', 'Music')
-GROUP BY 1, 2
-ORDER BY 3 DESC;
-
-SELECT f.title, c.name, COUNT(r.rental_id)
-FROM film f, category c, film_category fc, rental r, inventory i
-WHERE f.film_id = fc.film_id AND fc.category_id = c.category_id AND r.inventory_id = i.inventory_id AND f.film_id = i.film_id AND c.name IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
-GROUP BY 1, 2
-ORDER BY 3 DESC;
-
-SELECT name, COUNT(name) cat_total
-FROM (SELECT f.title, c.name
-    FROM film f, category c, film_category fc
-    WHERE f.film_id = fc.film_id AND fc.category_id = c.category_id AND c.name IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
-    GROUP BY 1, 2
-    ORDER BY 2) t1
-GROUP BY 1;
