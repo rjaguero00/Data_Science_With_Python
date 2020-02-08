@@ -55,6 +55,23 @@ ORDER BY 3 DESC;
 
 -- 3. How many films were returned early, late, and on time?
 
+WITH
+    t1
+    AS
+    (
+        SELECT rental_duration - DATE_PART('day', return_date - rental_date) AS days_rented
+        FROM rental r, inventory i, film f
+        WHERE r.inventory_id = i.inventory_id AND f.film_id = i.film_id
+    )
+SELECT CASE WHEN days_rented > 0 THEN 'Early'
+            WHEN days_rented = 0 THEN 'On Time'
+            ELSE 'Late' END AS rental_status,
+    count(*),
+    (100*count(*))/sum(count(*)) OVER () AS percentage
+FROM t1
+GROUP BY 1
+ORDER BY 3 DESC;
+
 -- Finds the number of days the film was rented for 
 WITH
     t1
