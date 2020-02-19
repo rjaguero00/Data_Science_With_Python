@@ -1,1 +1,21 @@
 Control Flow
+
+Practice
+
+points = 174  # use this input to make your submission
+
+
+# write your if statement here
+if points >=1 and points <= 50:
+    result = "Congratulations! You've won a wooden rabbit!"
+elif points >= 51 and points <= 150:
+    result = "No prize"
+elif points >= 151 and points <= 180:
+    result = "Congratulations! You've won a wafer-thin mint!"
+elif points >= 181 and points == 200:
+    result = "Congratulations! You've won a Penguin!"
+else:
+    result = "Oh dear, no prize this time."
+    
+    
+print(result)
