@@ -105,3 +105,58 @@ else:
     result = "Oh dear, no prize this time."
     
 print(result)
+
+Quiz 3 
+1. Create a new list named username and lowercase each name and replace the space with underscores
+
+
+names = ["Joey Tribbiani", "Monica Geller", "Chandler Bing", "Phoebe Buffay"]
+usernames = []
+
+# write your for loop here
+for name in names:
+    usernames.append(name.lower().replace(" ", "_"))
+
+
+print(usernames)
+
+
+
+2. Same thing as above but now use range to lowercase usernames and replace space with underscores
+
+usernames = ["Joey Tribbiani", "Monica Geller", "Chandler Bing", "Phoebe Buffay"]
+
+# write your for loop here
+for index in range (len(usernames)):
+    usernames[index] = usernames[index].lower().replace(" ", "_")
+
+print(usernames)
+
+
+3. Write a for loop that iterates over a list of strings, tokens, and counts how many of them are XML tags.
+
+tokens = ['<greeting>', 'Hello World!', '</greeting>']
+count = 0
+
+# write your for loop here
+for token in tokens:
+    if token.startswith("<") and token.endswith(">"):
+            count += 1
+
+print(count)
+
+
+4.Write some code, including a for loop, that iterates over a list of strings and creates a single string, html_str, which is an HTML list. 
+
+
+items = ['first string', 'second string']
+html_str = "<ul>\n"
+
+
+# write your code here
+for item in items:
+    html_str += "<li>{}</li>\n".format(item)
+html_str += "</ul>"
+
+
+print(html_str)
